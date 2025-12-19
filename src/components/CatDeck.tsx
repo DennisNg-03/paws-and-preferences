@@ -49,41 +49,48 @@ const CatDeck = () => {
 	const [liked, setLiked] = useState<CardData[]>([]);
 	// const allLikedCats = JSON.parse(localStorage.getItem(LIKED_CATS_KEY) || "[]");
 
-	useEffect(() => {
-		const fetchCats = async () => {
-			setLoading(true);
+	const fetchCats = async () => {
+		setLoading(true);
+		setFrontLoaded(false);
 
-			const cached = localStorage.getItem(CATS_KEY);
-			if (cached) {
-				setCards(JSON.parse(cached));
-				setLoading(false);
-				return;
-			}
-
-			const urls = await Promise.all(
-				Array.from({ length: CAT_COUNT }).map(async (_, i) => {
-					const res = await fetch("https://cataas.com/cat?json=true");
-					const data = await res.json();
-					const url = `https://cataas.com/cat/${data.id}`;
-
-					// Preload image
-					await new Promise<void>((resolve) => {
-						const img = new Image();
-						img.src = url;
-						img.onload = () => resolve();
-						img.onerror = () => resolve();
-					});
-
-					return { id: i + 1, url };
-				})
-			);
-
-			setCards(urls);
-			localStorage.setItem(CATS_KEY, JSON.stringify(urls));
+		const cached = localStorage.getItem(CATS_KEY);
+		if (cached) {
+			setCards(JSON.parse(cached));
 			setLoading(false);
-		};
+			return;
+		}
 
-		fetchCats();
+		const idsSet = new Set<number>();
+		const cardsArr: CardData[] = [];
+
+		while (cardsArr.length < CAT_COUNT) {
+			const res = await fetch("https://cataas.com/cat?json=true");
+			const data = await res.json();
+
+			if (idsSet.has(data.id)) continue; // skip duplicates
+
+			idsSet.add(data.id);
+			const url = `https://cataas.com/cat/${data.id}`;
+
+			await new Promise<void>((resolve) => { // preload images
+				const img = new Image();
+				img.src = url;
+				img.onload = () => resolve();
+				img.onerror = () => resolve();
+			});
+
+			cardsArr.push({ id: cardsArr.length + 1, url });
+		}
+
+		setCards(cardsArr);
+		localStorage.setItem(CATS_KEY, JSON.stringify(cardsArr));
+		setLoading(false);
+	};
+
+	useEffect(() => {
+		(async () => {
+			await fetchCats();
+		})();
 	}, []);
 
 	const undoLast = () => {
@@ -135,7 +142,7 @@ const CatDeck = () => {
 							key={cat.id}
 							src={cat.url}
 							className="
-								h-[40vh] w-[55vw]
+								h-[45vh] w-[55vw]
 								sm:h-[50vh] sm:w-[55vw]
 								lg:h-[60vh] lg:w-[60vw]
 								max-h-130 max-w-90
@@ -157,8 +164,10 @@ const CatDeck = () => {
 							localStorage.removeItem(CATS_KEY);
 							setCards([]);
 							setHistory([]);
+							setLiked([]);
 							setFrontLoaded(false);
 							setShowSummary(false);
+							fetchCats();
 						}}
 						className="
             px-6 py-3 rounded-full
@@ -190,15 +199,15 @@ const CatDeck = () => {
 
 	return (
 		<>
-			{!frontLoaded && (
-				<div className="absolute inset-0 grid place-items-center bg-black/70 z-10">
+			{/* {cards.length > 0 && !frontLoaded && (
+				<div className="fixed inset-0 grid place-items-center bg-black/70 z-50">
 					<div className="animate-pulse text-gray-400 text-lg">
 						Loading cats… This might take a while...
 					</div>
 				</div>
-			)}
+			)} */}
 			{/* Progress bar */}
-			<div className="min-h-full flex items-center justify-between px-6 py-3">
+			<div className="min-h-full flex items-center justify-between px-6 pt-10 sm:pt-6 pb-3">
 				<div className="text-sm text-gray-500">
 					{currentIndex} / {CAT_COUNT}
 				</div>
