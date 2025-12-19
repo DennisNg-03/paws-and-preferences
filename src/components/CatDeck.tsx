@@ -30,6 +30,7 @@ const CatDeck = () => {
 	const [cards, setCards] = useState<CardData[]>([]);
 	const [showSummary, setShowSummary] = useState(false);
 	const [history, setHistory] = useState<SwipeHistory[]>([]);
+	const [liked, setLiked] = useState<CardData[]>([]);
 
 	const progress = CAT_COUNT - cards.length + 1;
 	const currentIndex = Math.min(progress, CAT_COUNT);
@@ -41,13 +42,6 @@ const CatDeck = () => {
 			setFrontLoaded(true);
 		}
 	};
-
-	// const getLikedCatsFromStorage = (): CardData[] => {
-	// 	const stored = localStorage.getItem(LIKED_CATS_KEY);
-	// 	return stored ? JSON.parse(stored) : [];
-	// };
-	const [liked, setLiked] = useState<CardData[]>([]);
-	// const allLikedCats = JSON.parse(localStorage.getItem(LIKED_CATS_KEY) || "[]");
 
 	const fetchCats = async () => {
 		setLoading(true);
@@ -103,7 +97,6 @@ const CatDeck = () => {
 		if (last.direction === "right") {
 			setLiked((prev) => {
 				const newLiked = prev.filter((cat) => cat.id !== last.card.id);
-				// localStorage.setItem(LIKED_CATS_KEY, JSON.stringify(newLiked));
 				return newLiked;
 			});
 		}
@@ -199,13 +192,6 @@ const CatDeck = () => {
 
 	return (
 		<>
-			{/* {cards.length > 0 && !frontLoaded && (
-				<div className="fixed inset-0 grid place-items-center bg-black/70 z-50">
-					<div className="animate-pulse text-gray-400 text-lg">
-						Loading cats… This might take a while...
-					</div>
-				</div>
-			)} */}
 			{/* Progress bar */}
 			<div className="min-h-full flex items-center justify-between px-6 pt-10 sm:pt-6 pb-3">
 				<div className="text-sm text-gray-500">
