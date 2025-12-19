@@ -30,7 +30,7 @@ Error generating stack: `+u.message+`
             bg-emerald-400 hover:bg-emerald-500
             text-white font-medium
             transition shadow-md hover:shadow-lg
-          `,children:"Continue swiping"})]})]}):ne.jsxs(ne.Fragment,{children:[ne.jsxs("div",{className:"min-h-full flex items-center justify-between px-6 pt-10 sm:pt-5",children:[ne.jsxs("div",{className:"text-sm text-gray-500",children:[y," / ",Is]}),ne.jsx("button",{onClick:I,disabled:f.length===0,className:`
+          `,children:"Continue swiping"})]})]}):ne.jsxs(ne.Fragment,{children:[ne.jsxs("div",{className:"min-h-full flex items-center justify-between px-6 pt-10 sm:pt-6 pb-3",children:[ne.jsxs("div",{className:"text-sm text-gray-500",children:[y," / ",Is]}),ne.jsx("button",{onClick:I,disabled:f.length===0,className:`
 						text-sm text-gray-700 not-[]:disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed hover:shadow-lg`,children:"Undo"})]}),ne.jsxs("div",{className:`
 					relative h-125 w-full
 					grid place-items-center
